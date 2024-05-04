@@ -1,0 +1,58 @@
+que es node.js
+
+
+node.js es javascript ejecutado en el lado del servidor
+por eso se pueden hacer aplicaiones en tiempo real como chats terminal etc
+
+usando el protocolo websockets
+
+como tambien hay otros tipos de protocolos
+protocolos HTTP - DNS
+que son para applicaciones
+
+
+http
+stateless
+cacheable -> guarda los datos en el cache
+caso de uso
+	recursos htmk js im
+	rest api	
+no event driver
+
+cliente - servidor
+
+request - response
+TCP como protocolo de transporte
+
+
+
+
+web sockets
+stateful
+no cacheable
+casos de uso
+	real time
+	info ida y venida
+	poca latencia
+event driver
+
+el usuario inicia la primera peticion
+inicia el http "handshake"
+cliente - servidor
+request - response
+--- CONEXION PERSISTENTE CON EL WEB SOCKET ---
+tanto el usuario como el servidor se pueden
+intercambiar datos en cualquier momento
+--- SE CIERRA CONEXION CON EL WEB SOCKET ---
+la cierra el usuario o servidor
+
+
+tcp como protocolo de transporte
+---
+PUEDE INTERCAMBIAR MENSAJES ENTRE EL CLIENTE Y EL SERVIDOR EN CUALQUIER MOMENTO
+---
+
+
+npm init -y
+npm install express.js -E
+

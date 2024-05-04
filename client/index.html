@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chatito</title>
+    <script type="module">
+        import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
+
+
+        // cliente guarda el ultimo mensaje id
+        const socket = io({
+            auth: {
+                serverOffset: 0
+            }
+        })
+
+        const form = document.getElementById('form')
+        const input = document.getElementById('input')
+        const messages = document.getElementById('messages')
+
+        socket.on('chat message', (msg) => {
+            const item = `<li>${msg}</li>`
+            messages.insertAdjacentHTML('beforeend', item)
+            // ver el ultimo mensaje
+            socket.auth.serverOffset = serverOffset
+        })
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault()
+
+            // si tenemos algo en el chat le enviamos el valor al server
+            if(input.value) {
+                socket.emit('chat message', input.value)
+                // para que cuando lo envie desaparesca
+                input.value = ''
+            }
+        })
+
+    </script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+        :root {
+            color-scheme: light dark;
+        }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            display: grid;
+            place-content: center;
+            height: 100vh;
+            padding: 36px 36px 100px 36px;
+            grid-template-rows: 1fr;
+        }
+
+
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #messages > li {
+            padding: .5rem 1rem
+        }
+        #messages > li:nth-child(odd){
+            background-color: rgb(96, 96, 96);
+        }
+
+
+
+        #chat {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow: hidden;
+            width: 350px;
+            height: 100%;
+            position: relative;
+        }
+        #form {
+            bottom: 0;
+            display: flex;
+            height: 48px;
+            left: 0;
+            padding: 4px;
+            position: absolute;
+            right: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <section id="chat">
+        <ul id="messages"></ul>
+        <form id="form">
+            <input type="text" name="message" id="input" placeholder="escribe el mensaje loco!"
+            autocomplete="off">
+            <button type="submit"> mandalo loco! </button>
+
+        </form>
+
+    </section>
+</body>
+</html>
