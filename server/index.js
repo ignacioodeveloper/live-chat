@@ -18,8 +18,9 @@ dotenv.config()
 
 /// crear y conectar el server
 const port = process.env.PORT ?? 3000
-const app = express()
 
+
+const app = express()
 const server = createServer(app)
 const io = new Server(server,
     // para no perder info cuando se mandan mensajes
@@ -40,11 +41,13 @@ const db = createClient({
 await db.execute(`
   CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    content TEXT
+    content TEXT,
+    user TEXT
   );
 `);
 
 
+// falta refactorizar
 io.on('connection', async (socket) =>  {
 
     console.log('un loco se a conectaooo!!')
@@ -59,19 +62,21 @@ io.on('connection', async (socket) =>  {
 
         let result;
         // grabar el mensaje en la db persistensia de datos
+        const username = socket.handshake.auth.username ?? 'anonymous'
+        console.log({username})
         try {
             console.log(msg)
           
             result = await db.execute({
-              sql: `INSERT INTO messages (content) VALUES (:content)`,
-              args: { content: msg }
+              sql: `INSERT INTO messages (content, user) VALUES (:msg, :username)`,
+              args: { msg, username }
             });
           } catch (e) {
             console.error(e)
             return
           }
         // emitir mensaje
-        io.emit('chat message', msg, result.lastInsertRowid.toString())
+        io.emit('chat message', msg, result.lastInsertRowid.toString(), username)
         // console.log('message: ' + msg)
 
     })
@@ -82,11 +87,11 @@ io.on('connection', async (socket) =>  {
     if (!socket.recovered) {
         try {
             const results = await db.execute({
-                sql: `SELECT id, content FROM messages WHERE id > ?`,
+                sql: `SELECT id, content, user FROM messages WHERE id > ?`,
                 args: [socket.handshake.auth.serverOffset ?? 0]
             })
             results.rows.forEach(row => {
-                socket.emit('chat message', row.content, row.id)
+                socket.emit('chat message', row.content, row.id, row.user)
             })
         }
 
