@@ -17,7 +17,7 @@ import { createServer } from 'node:http'
 dotenv.config()
 
 /// crear y conectar el server
-const port = process.env.PORT ?? 3000
+const port = process.env.PORT ?? 5001
 
 
 const app = express()
