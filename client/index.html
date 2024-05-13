@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>chatito</title>
+
+    <title>Live-Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <script type="module">
         import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
 
@@ -40,18 +43,50 @@
         // normalmente hay que autentificarlo
         // enviar la cokie revisar que la cokie tenga acceso
         //
+        
+        socket.on('chat message', (msg, serverOffset, username) => { 
+            const item = `
+                <li class="${username === localStorage.getItem('username') ? 'justify-end' : 'justify-start'}">
+                    <div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 ${username === localStorage.getItem('username') ? 'rounded-tl-xl rounded-bl-xl rounded-br-xl dark:bg-gray-50 border border-2 border-blue-500' : 'rounded-e-xl rounded-es-xl dark:bg-blue-800 text-white' }  ">
+                        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                            <span class="text-sm font-semibold">${username}</span>
+                        </div>
+                        <p class="text-sm font-normal py-2.5">${msg}</p>
+                    </div>
+                </li>
+            
+                
+                
+            
+            
+            
+                `;
+            messages.insertAdjacentHTML('beforeend', item);
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+
+
+
+
+        // socket.on('chat message', (msg, serverOffset, username) => {
+        //     const item = `
+        //         <li class="${username === localStorage.getItem('username') ? 'justify-end' : 'justify-start'}">
+        //             <div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
+        //                 <div class="flex items-center space-x-2 rtl:space-x-reverse">
+        //                     <span class="text-sm font-semibold text-gray-900 dark:text-white">${username}</span>
+        //                 </div>
+        //                 <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">${msg}</p>
+        //             </div>
+        //         </li>
+        //     `;
+        //     messages.insertAdjacentHTML('beforeend', item);
+        //     messages.scrollTop = messages.scrollHeight;
+        // });
 
 
         
-        socket.on('chat message', (msg, serverOffset, username) => {
-            const item = `
-            <li>
-            <p>${msg}</p><small>enviado por ${username}
-            </li>`;
-            messages.insertAdjacentHTML('beforeend', item)
-            // ver el ultimo mensaje
-            socket.auth.serverOffset = serverOffset
-        })
+
 
         form.addEventListener('submit', (e) => {
             e.preventDefault()
@@ -66,54 +101,48 @@
 
     </script>
     <style>
-        *,
-        *::before,
-        *::after {
-        box-sizing: border-box;
-        }
 
-        :root {
-        color-scheme: light dark;
-        }
 
-        body {
-        margin: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        display: grid;
-        place-content: center;
-        height: 100vh;
-        padding: 36px 36px 100px 36px;
-        grid-template-rows: 1fr;
-        }
 
-        #messages {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        overflow-y: scroll;
-        height: 100%;
-        scroll-behavior: smooth;
-        padding-bottom: 48px;
-        }
 
-        #messages>li {
+    body {
+
+      height: 100vh;
+    }
+    
+    #messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    height: 100%;
+    scroll-behavior: smooth;
+    padding-bottom: 48px;
+    }
+
+    #messages > li {
         padding: .5rem 1rem;
-        }
+        display: flex;
+    }
 
-        #messages>li:nth-child(odd) {
-        background: #000;
-        }
+    #messages > li.justify-end {
+        justify-content: flex-end;
+    }
 
-        #chat {
+    #messages > li.justify-start {
+        justify-content: flex-start;
+    }
+
+    #chat {
         border: 1px solid #ccc;
         border-radius: 4px;
         overflow: hidden;
-        width: 350px;
+        width: 80%;
         height: 100%;
         position: relative;
-        }
+    }
 
-        #form {
+    #form {
         bottom: 0;
         display: flex;
         height: 48px;
@@ -121,45 +150,31 @@
         padding: 4px;
         position: absolute;
         right: 0;
-        }
+    }
 
-        #input {
-        border-radius: 9999px;
-        border: 1px solid #eee;
-        flex: 1;
-        margin: 4px;
-        padding: 0 8px;
-        }
 
-        #input:focus {
-        outline: 0;
-        }
 
-        #form>button {
-        background: #09f;
-        color: #fff;
-        border: 0;
-        margin: 4px;
-        border-radius: 4px;
-        }
 
-        #form>button:hover {
-        background: #0cf;
-        }
+    </style> 
 
-    </style>
+
 </head>
 <body>
 
-    <section id="chat">
+
+
+    <section id="chat" class="mx-auto max-w-screen-md p-4 border-4 border-blue-500 h-screen flex flex-col justify-between">
+        <h2 class="text-center mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-4xl">Chat-Live</h2>
+
         <ul id="messages"></ul>
-        <form id="form">
-            <input type="text" name="message" id="input" placeholder="escribe un mensaje"
-            autocomplete="off">
-            <button type="submit"> MANDAR MENSAJE </button>
 
+        <form id="form" class="w-full flex items-center">
+            <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 flex-grow p-2.5" type="text" name="message" id="input" placeholder="escribe un mensaje" autocomplete="off">
+            <button type="submit" class="py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">MANDAR MENSAJE</button>
         </form>
-
     </section>
+
+
+
 </body>
 </html>
