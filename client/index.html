@@ -47,45 +47,62 @@
         //
         // antiguo
         //(msg, serverOffset, username)
-        socket.on('chat message', ({ msg,serverOffset, username }) => { 
+        // socket.on('chat message', ({ msg , serverOffset, username, timestamp  }) => { 
+        //     const item = `
+        //         <li class="${username === localStorage.getItem('username') ? 'justify-end' : 'justify-start'}">
+        //             <div class="grid ">
+        //             <div class="flex gap-2.5 ">
+        //             <div class="grid">
+        //                 <h5 class="text-gray-900 text-sm font-semibold leading-snug">${username}</h5>
+        //                 <div class="w-max grid">
+        //                 <div class="px-3.5 py-2  ${username === localStorage.getItem('username') ? 'bg-indigo-600 rounded-tr-none' : 'bg-gray-100 rounded-tl-none' }  rounded-3xl  justify-start items-center gap-3 inline-flex">
+        //                     <h5 class=" ${username === localStorage.getItem('username') ? 'text-white' : 'text-black' } text-sm font-normal leading-snug">${msg}</h5>
+        //                 </div>
+        //                 <div class=" items-center inline-flex mb-2.5">
+        //                     <h6 class="text-gray-500 text-xs font-normal leading-4 py-1">${timestamp}</h6>
+        //                 </div>
+        //                 </div>
+        //             </div>
+        //             </div>
+        //             </div>
+
+        //         </li>
+        //         `;
+        //     messages.insertAdjacentHTML('beforeend', item);
+        //     messages.scrollTop = messages.scrollHeight;
+        // });
+
+        let lastUsername = null;
+
+        socket.on('chat message', ({ msg, serverOffset, username, timestamp }) => {
+            const usernameDisplay = username !== lastUsername ? `<h5 class="text-gray-900 py-2 text-sm font-semibold leading-snug">${username}</h5>` : '';
+            lastUsername = username;
+
             const item = `
                 <li class="${username === localStorage.getItem('username') ? 'justify-end' : 'justify-start'}">
-                    <div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 ${username === localStorage.getItem('username') ? 'rounded-tl-xl rounded-bl-xl rounded-br-xl dark:bg-gray-50 border border-2 border-blue-500' : 'rounded-e-xl rounded-es-xl dark:bg-blue-800 text-white' }  ">
-                        <div class="flex items-center space-x-2 rtl:space-x-reverse">
-                            <span class="text-sm font-semibold">${username}</span>
+                    <div class="">
+                        <div class="flex gap-2.5">
+                            <div class="">
+                                ${usernameDisplay}
+                                <div class="grid">
+                                    <div class="px-3.5 py-2 ${username === localStorage.getItem('username') ? 'bg-indigo-600 rounded-tr-none ' : 'bg-gray-100 rounded-tl-none '} rounded-3xl gap-3 inline-block ">
+                                        <h5 class="${username === localStorage.getItem('username') ? 'text-white ' : 'text-black '} text-sm font-normal leading-snug ">${msg}</h5>
+                                    </div>
+                                    <div class="inline-block mb-2.5">
+                                        <h6 class="text-gray-500 text-xs font-normal leading-4 py-1">${timestamp}</h6>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-sm font-normal py-2.5">${msg}</p>
                     </div>
                 </li>
-            
-                
-                
-            
-            
-            
-                `;
+            `;
             messages.insertAdjacentHTML('beforeend', item);
             messages.scrollTop = messages.scrollHeight;
         });
 
 
 
-
-
-        // socket.on('chat message', (msg, serverOffset, username) => {
-        //     const item = `
-        //         <li class="${username === localStorage.getItem('username') ? 'justify-end' : 'justify-start'}">
-        //             <div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
-        //                 <div class="flex items-center space-x-2 rtl:space-x-reverse">
-        //                     <span class="text-sm font-semibold text-gray-900 dark:text-white">${username}</span>
-        //                 </div>
-        //                 <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">${msg}</p>
-        //             </div>
-        //         </li>
-        //     `;
-        //     messages.insertAdjacentHTML('beforeend', item);
-        //     messages.scrollTop = messages.scrollHeight;
-        // });
 
 
         
@@ -171,27 +188,29 @@
 
         <ul id="messages"></ul>
 
-        <form id="form" class="w-full flex items-center">
-            <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 flex-grow p-2.5" type="text" name="message" id="input" placeholder="escribe un mensaje" autocomplete="off">
-            <button type="submit" class="py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">MANDAR MENSAJE</button>
+        <form id="form" class="w-full flex items-center bg-gray-50 border border-gray-300 rounded-3xl ">
+            <input class=" text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 flex-grow p-2.5" type="text" name="message" id="input" placeholder="escribe un mensaje" autocomplete="off">
+            
+            <button type="submit" class="items-center flex px-3 py-2 bg-indigo-600 rounded-full shadow ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <g id="Send 01">
+                    <path id="icon" d="M9.04071 6.959L6.54227 9.45744M6.89902 10.0724L7.03391 10.3054C8.31034 12.5102 8.94855 13.6125 9.80584 13.5252C10.6631 13.4379 11.0659 12.2295 11.8715 9.81261L13.0272 6.34566C13.7631 4.13794 14.1311 3.03408 13.5484 2.45139C12.9657 1.8687 11.8618 2.23666 9.65409 2.97257L6.18714 4.12822C3.77029 4.93383 2.56187 5.33664 2.47454 6.19392C2.38721 7.0512 3.48957 7.68941 5.69431 8.96584L5.92731 9.10074C6.23326 9.27786 6.38623 9.36643 6.50978 9.48998C6.63333 9.61352 6.72189 9.7665 6.89902 10.0724Z" stroke="white" stroke-width="1.6" stroke-linecap="round" />
+                  </g>
+                </svg>
+                <h3 class="text-white text-xs font-semibold leading-4 px-2">Enviar</h3>
+            </button>
         </form>
     </section>
 
 
-    <div class="w-full">
+    <!-- <div class="w-full">
+
+        
         <div class="grid pb-11">
         <div class="flex gap-2.5 mb-4">
-          <img src="https://pagedone.io/asset/uploads/1710412177.png" alt="Shanay image" class="w-10 h-11">
           <div class="grid">
             <h5 class="text-gray-900 text-sm font-semibold leading-snug pb-1">Shanay cruz</h5>
-            <div class="w-max grid">
-              <div class="px-3.5 py-2 bg-gray-100 rounded justify-start  items-center gap-3 inline-flex">
-                <h5 class="text-gray-900 text-sm font-normal leading-snug">Guts, I need a review of work. Are you ready?</h5>
-              </div>
-              <div class="justify-end items-center inline-flex mb-2.5">
-                <h6 class="text-gray-500 text-xs font-normal leading-4 py-1">05:14 PM</h6>
-              </div>
-            </div>
+
             <div class="w-max grid">
               <div class="px-3.5 py-2 bg-gray-100 rounded justify-start items-center gap-3 inline-flex">
                 <h5 class="text-gray-900 text-sm font-normal leading-snug">Let me know</h5>
@@ -203,6 +222,10 @@
           </div>
         </div>
         </div>
+
+
+
+
         <div class="flex gap-2.5 justify-end pb-40">
         <div class="">
           <div class="grid mb-2">
@@ -256,7 +279,7 @@
           </button>
         </div>
         </div>
-    </div>
+    </div> -->
 
 
 </body>

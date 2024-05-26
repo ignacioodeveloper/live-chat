@@ -34,8 +34,11 @@ const pool = new Pool({
       CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
         content TEXT,
-        "user" TEXT
+        "user" TEXT,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
       )
+      
     `);
     client.release();
   } catch (error) {
@@ -53,12 +56,14 @@ io.on('connection', async (socket) => {
   socket.on('chat message', async (msg) => {
   //socket.on('chat message', async ({ msg }) => {
     const username = socket.handshake.auth.username || 'anonymous'; // Obtener el nombre de usuario desde la autenticación del socket
-    console.log('Mensaje recibido:', msg, 'de', username);
+    const timestamp = new Date().toISOString(); // Obtener el timestamp actual
+
+    console.log('Mensaje recibido:', msg, 'de', username,timestamp);
 
     try {
-      await pool.query('INSERT INTO messages (content, "user") VALUES ($1, $2)', [msg, username]);
+      await pool.query('INSERT INTO messages (content, "user", timestamp) VALUES ($1, $2, $3)', [msg, username, timestamp]);
       
-      io.emit('chat message', { msg, username }); // Emitir el mensaje a todos los clientes conectados
+      io.emit('chat message', { msg, username,timestamp }); // Emitir el mensaje a todos los clientes conectados
     } catch (error) {
       console.error('Error al insertar el mensaje en la base de datos:', error);
     }
@@ -66,9 +71,9 @@ io.on('connection', async (socket) => {
 
   // Recuperar mensajes antiguos al conectar un nuevo cliente
   try {
-    const result = await pool.query('SELECT id, content, "user" FROM messages');
+    const result = await pool.query('SELECT id, content, "user", timestamp FROM messages');
     result.rows.forEach(row => {
-      socket.emit('chat message', { msg: row.content, username: row.user });
+      socket.emit('chat message', { msg: row.content, username: row.user, timestamp: row.timestamp });
       // antiguo 
       //socket.emit('chat message', row.content, row.user); // Emitir el mensaje al nuevo cliente
     });
